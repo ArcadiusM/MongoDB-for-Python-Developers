@@ -140,19 +140,12 @@ def get_movies_faceted(filters, page, movies_per_page):
         }
     }
 
-    """
-    Ticket: Faceted Search
 
-    Please append the skip_stage, limit_stage, and facet_stage to the pipeline
-    (in that order).
-
-    The pipeline is a Python array, so you can use append() or extend() to
-    complete this task.
-    """
-
-    # TODO: Faceted Search
     # Add the necessary stages to the pipeline variable in the correct order.
-    # pipeline.extend(...)
+    pipeline.append(skip_stage)
+    pipeline.append(limit_stage)
+    pipeline.append(facet_stage)
+
 
     try:
         movies = list(db.movies.aggregate(pipeline, allowDiskUse=True))[0]
@@ -236,7 +229,7 @@ def get_movies(filters, page, movies_per_page):
 
     # TODO: Paging
     # Use the cursor to only return the movies that belong on the current page.
-    movies = cursor.limit(movies_per_page)
+    movies = cursor.limit(movies_per_page).skip(page*movies_per_page)
 
     return (list(movies), total_num_movies)
 
