@@ -201,6 +201,7 @@ def get_movies(filters, page, movies_per_page):
     Based on the page number and the number of movies per page, the result may
     be skipped and limited.
 
+
     The `filters` from the API are passed to the `build_query_sort_project`
     method, which constructs a query, sort, and projection, and then that query
     is executed by this method (`get_movies`).
@@ -258,6 +259,21 @@ def get_movie(id):
             {
                 "$match": {
                     "_id": ObjectId(id)
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "comments",
+                    "let": { "id": "$_id"},
+                    "pipeline": [
+                        {
+                            "$match": { "$expr": { "$eq": [ "$movie_id", "$$id"]}}
+                        },
+                        {
+                            "$sort": { "date": DESCENDING }
+                        }
+                    ],
+                    "as": "comments"
                 }
             }
         ]
